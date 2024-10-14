@@ -13,7 +13,10 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getFromLocalStorage } from "../../utils/localStorage";
+import {
+  getFromLocalStorage,
+  clearLocalStorage,
+} from "../../utils/localStorage";
 
 const pages = [
   { link: "/", label: "Topics" },
@@ -50,6 +53,7 @@ function Header() {
   const logoutUser = () => {
     const checkRes = confirm("are you sure ? wan to log out");
     if (checkRes) {
+      clearLocalStorage();
       navigate("/auth/login");
     }
   };

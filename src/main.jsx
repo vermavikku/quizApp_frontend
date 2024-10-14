@@ -20,6 +20,7 @@ import Questions from "./pages/questions/Questions.jsx";
 import QuizResults from "./pages/result/Result.jsx";
 import LeaderboardPage from "./pages/leaderbord/LeaderBord.jsx";
 import Auth from "./pages/auth/auth.jsx";
+import NotFoundPage from "./pages/error/NotFound.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,10 +31,11 @@ const router = createBrowserRouter(
         <Route path="result" element={<QuizResults />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
       </Route>
-      <Route path="auth" element={<Auth/>}>
+      <Route path="auth" element={<Auth />}>
         <Route path="login" element={<CredentialsSignInPage />} />
         <Route path="register" element={<SignUpForm />} />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Route>
   )
 );
