@@ -62,13 +62,11 @@ export default function SignUpForm() {
       const response = await signUpUser(userInfo).unwrap();
 
       if (response) {
-        console.log("try", response);
         toast.success("Registered successfully");
         navigate("/auth/login");
       }
     } catch (error) {
       toast.error(error?.data?.Message);
-      console.log("vikas", error?.data?.Message);
     }
   };
 

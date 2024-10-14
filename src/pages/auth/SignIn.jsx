@@ -1,58 +1,65 @@
-import * as React from "react";
-import { AppProvider, SignInPage } from "@toolpad/core";
+import React, { useState } from "react";
+import { AppProvider } from "@toolpad/core";
 import { useTheme } from "@mui/material/styles";
+import {
+  Box,
+  Button,
+  TextField,
+  IconButton,
+  InputAdornment,
+  Typography,
+} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useSignInUserMutation } from "../../store/authApi";
+import { useNavigate, Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import {
   saveToLocalStorage,
   getFromLocalStorage,
 } from "../../utils/localStorage";
-import { useState } from "react";
-import { Box, Typography } from "@mui/material"; // Import Box
-import { useNavigate, Link } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
 
-const providers = [{ id: "credentials", name: "Email and Password" }];
-
-export default function CredentialsSignInPage() {
+export default function SignInForm() {
+  const theme = useTheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [signInUser] = useSignInUserMutation();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   React.useEffect(() => {
     const token = getFromLocalStorage("kt-auth-react-v");
     if (token) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
 
-  const signIn = async (provider, formData) => {
-    setLoading(true);
-    setError(null); // Reset error state
-
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
     try {
-      const email = formData.get("email");
-      const password = formData.get("password");
-      const response = await signInUser({ email, password }).unwrap();
+      const userInfo = {
+        email,
+        password,
+      };
+
+      const response = await signInUser(userInfo).unwrap();
 
       if (response) {
-        const token = response.token;
-        const name = response.name;
-        saveToLocalStorage("kt-auth-react-v", token);
-        saveToLocalStorage("name", name);
-        toast.success("login successfully");
+        saveToLocalStorage("kt-auth-react-v", response.token);
+        saveToLocalStorage("name", response.name);
+        toast.success("Login successfully");
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
-
-      toast.success(error.message);
-    } finally {
-      setLoading(false); // Reset loading state
+      toast.error(error?.data?.Message);
+      console.error("Error:", error?.data?.Message);
     }
   };
 
-  const theme = useTheme();
   return (
     <AppProvider theme={theme}>
       <Box
@@ -63,19 +70,65 @@ export default function CredentialsSignInPage() {
         bgcolor="#f5f5f5"
       >
         <Box
-          width="100%"
-          maxWidth="500px"
-          p={3}
-          bgcolor="white"
-          borderRadius={4}
-          boxShadow={3}
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            width: "100%",
+            maxWidth: 500,
+            p: 3,
+            bgcolor: "white",
+            borderRadius: 4,
+            boxShadow: 3,
+          }}
         >
-          {error && <div style={{ color: "red" }}>{error}</div>}
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <SignInPage signIn={signIn} providers={providers} />
-          )}
+          <Typography variant="h5" gutterBottom align="center">
+            Sign In
+          </Typography>
+
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+            variant="outlined"
+          />
+
+          <TextField
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            required
+            margin="normal"
+            variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Button
+            type="submit" 
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+          >
+            Sign In
+          </Button>
 
           <Typography variant="body2" align="center" sx={{ mt: 2 }}>
             Don't have an account?{" "}
@@ -85,6 +138,7 @@ export default function CredentialsSignInPage() {
           </Typography>
         </Box>
       </Box>
+      <ToastContainer />
     </AppProvider>
   );
 }
