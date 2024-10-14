@@ -14,6 +14,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useSignUpUserMutation } from "../../store/authApi";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { getFromLocalStorage } from "../../utils/localStorage";
 
 export default function SignUpForm() {
   const theme = useTheme();
@@ -33,6 +34,13 @@ export default function SignUpForm() {
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordPattern.test(password);
   };
+
+  React.useEffect(() => {
+    const token = getFromLocalStorage("kt-auth-react-v");
+    if (token) {
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

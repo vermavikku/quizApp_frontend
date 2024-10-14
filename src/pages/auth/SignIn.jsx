@@ -2,7 +2,10 @@ import * as React from "react";
 import { AppProvider, SignInPage } from "@toolpad/core";
 import { useTheme } from "@mui/material/styles";
 import { useSignInUserMutation } from "../../store/authApi";
-import { saveToLocalStorage } from "../../utils/localStorage";
+import {
+  saveToLocalStorage,
+  getFromLocalStorage,
+} from "../../utils/localStorage";
 import { useState } from "react";
 import { Box, Typography } from "@mui/material"; // Import Box
 import { useNavigate, Link } from "react-router-dom";
@@ -15,6 +18,13 @@ export default function CredentialsSignInPage() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    const token = getFromLocalStorage("kt-auth-react-v");
+    if (token) {
+      navigate("/");
+    }
+  }, []);
 
   const signIn = async (provider, formData) => {
     setLoading(true);
