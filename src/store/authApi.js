@@ -1,9 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./middleware";
+
+const baseUrl = "https://quiz-app-seven-beryl.vercel.app/v1/";
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: baseQueryWithReauth,
+  baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
   endpoints: (builder) => ({
     signInUser: builder.mutation({
       query: (data) => ({
@@ -19,11 +21,7 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-   
   }),
 });
 
-export const {
-  useSignInUserMutation,
-  useSignUpUserMutation,
-} = authApi;
+export const { useSignInUserMutation, useSignUpUserMutation } = authApi;

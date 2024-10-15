@@ -27,6 +27,7 @@ export default function SignInForm() {
   const [signInUser] = useSignInUserMutation();
   const navigate = useNavigate();
 
+  // Toggles password visibility
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -38,8 +39,8 @@ export default function SignInForm() {
     }
   }, [navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
+  // Handle sign-in action on button click
+  const handleSignIn = async () => {
     try {
       const userInfo = {
         email,
@@ -55,8 +56,8 @@ export default function SignInForm() {
         navigate("/");
       }
     } catch (error) {
-      toast.error(error?.data?.Message);
-      console.error("Error:", error?.data?.Message);
+      toast.error("Invalid username or password");
+      console.error("Error:", error);
     }
   };
 
@@ -70,8 +71,6 @@ export default function SignInForm() {
         bgcolor="#f5f5f5"
       >
         <Box
-          component="form"
-          onSubmit={handleSubmit}
           sx={{
             width: "100%",
             maxWidth: 500,
@@ -121,11 +120,11 @@ export default function SignInForm() {
           />
 
           <Button
-            type="submit" 
             fullWidth
             variant="contained"
             color="primary"
             sx={{ mt: 2 }}
+            onClick={handleSignIn} // Trigger sign-in on button click
           >
             Sign In
           </Button>
